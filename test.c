@@ -20,7 +20,7 @@ void printFolder(Folder* f) {
     {
         system("cls");
         printf("폴더를 생성해 주세요");
-        Sleep(5000);
+        Sleep(3000);
         return;
     }
     Folder* p = f->next;
@@ -46,6 +46,40 @@ Folder* makeFolder(Folder* f, String name) {
     }
     return f;
 }
+
+void addFolder(Folder* f) {
+    String file_name;
+    system("cls");
+    printf("파일 입력 >> ");
+    scanf("%s", file_name);
+    for (int i = 0; i < 100; i++) {
+        if (f->data[i].str == NULL) {
+            f->data[i] = file_name;
+            system("cls");
+            printf("완료되었습니다\n");
+            Sleep(2000);
+            return;
+        }
+    }
+}
+
+void searchFolder(Folder* f, String name) {
+    if (f == NULL) {
+        system("cls");
+        printf("폴더가 존재하지 않습니다\n");
+        Sleep(2000);
+        return;
+    }
+    Folder* p = f->next;
+    do {
+        if (p == NULL) break;
+        if (!strcmp(p->name.str, name.str)) {
+            addFile(p);
+        }
+        p = p->next;
+    } while (p != NULL);
+}
+
 int main() {
     system("color 2");
     Folder* Folder = NULL;
@@ -81,6 +115,10 @@ int main() {
         case 3:
             printFolder(Folder);
             Sleep(2000);
+            break;
+        case 4:
+            scanf("%s", folder_name);
+            searchFolder(Folder, folder_name);
             break;
         case 7:
             appController = 0;
