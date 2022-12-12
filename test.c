@@ -11,7 +11,7 @@ typedef struct String
 typedef struct Folder
 {
     String name;
-    struct String data[100];
+    String data[100];
     struct Folder* next;
 }Folder;
 
@@ -31,6 +31,11 @@ void printFolder(Folder* f) {
         printf("%d. %s\n", ++i, p->name.str);
         p = p->next;
     } while (p != f->next);
+}
+
+void resetFolder(Folder* f) {
+    String reset = { "" };
+    for (int i = 0; i < 100; i++) f->data[i] = reset;
 }
 
 Folder* makeFolder(Folder* f, String name) {
@@ -53,9 +58,9 @@ void addFile(Folder* f) {
     printf("파일 입력 >> ");
     scanf("%s", file_name.str);
     for (int i = 0; i < 100; i++) {
-        if (f->data[i].str == NULL) {
+        if (!strlen(f->data[i].str)) {
             f->data[i] = file_name;
-            system("cls");
+            system("cls");  
             printf("완료되었습니다\n");
             Sleep(2000);
             return;
@@ -83,10 +88,11 @@ void searchFolder(Folder* f, String name) {
 
 void printFile(Folder* f) {
     for (int i = 0; i < 100; i++) {
-        if (f->data[i].str != NULL) {
+        if (strlen(f->data[i].str)) {
             printf("%s\n", f->data[i].str);
         }
     }
+    Sleep(2000);
 }
 
 void searchFile(Folder* f, String name) {
@@ -130,7 +136,7 @@ String folderName(String folder_name) {
 }
 
 int main() {
-    system("color 2");
+    system("color a");
     Folder* Folder = NULL;
     int appController = 1;
     int controller = 0;
@@ -145,6 +151,7 @@ int main() {
             printf("--------------------폴더 생성---------------\n");
             folder_name = folderName(folder_name);
             Folder = makeFolder(Folder, folder_name);
+            resetFolder(Folder);
             break;
         case 2:
             system("cls");
@@ -165,13 +172,14 @@ int main() {
             printFolder(Folder);
             folder_name = folderName(folder_name);
             searchFile(Folder, folder_name);
+            break;
         case 7:
             appController = 0;
             break;
         default:
             system("cls");
             printf("잘못된 선택입니다\n");
-            appController = 0;
+            Sleep(2000);
             break;
         }
     }
