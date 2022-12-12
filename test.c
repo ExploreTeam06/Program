@@ -51,6 +51,13 @@ Folder* makeFolder(Folder* f, String name) {
         f->next = f;
     }
     else {
+        Folder* p = f->next;
+        while (p != NULL) {
+            if (!strcmp(p->name.str, name.str)) {
+                return f;
+            }
+            p = p->next;
+        }
         newFolder->next = f->next;
         f->next = newFolder;
         f = newFolder;
@@ -58,17 +65,35 @@ Folder* makeFolder(Folder* f, String name) {
     return f;
 }
 
+void fileSort(Folder* f) {
+    int check = 0;
+    String checkdata;
+    for (int i = 0; i < 99; i++) {
+        check = strcmp(f->data[i].str, f->data[i + 1].str);
+        if (check)  {
+            strcpy(checkdata.str, f->data[i + 1].str);
+            strcpy(f->data[i + 1].str, f->data[i].str);
+            strcpy(f->data[i].str, checkdata.str);
+        }
+        else if (check == 0) {
+            deleteFile();
+        }
+    }
+}
+
 void addFile(Folder* f) {
     String file_name = { "" };
     printf("파일 입력 >> ");
     scanf("%s", file_name.str);
     for (int i = 0; i < 100; i++) {
+        if (!strcmp(f->data[i].str, file_name.str)) {
+            return;
+        }
         if (!strlen(f->data[i].str)) {
             f->data[i] = file_name;
             system("cls");  
             printf("완료되었습니다\n");
             Sleep(2000);
-           // fileSort(f);
             return;
         }
     }
@@ -93,6 +118,7 @@ void searchFolder(Folder* f, String name) {
 }
 
 void printFile(Folder* f) {
+    int j = 0;
     if (isEmpty(f)) {
         system("cls");
         printf("폴더가 존재하지 않습니다\n");
@@ -101,7 +127,7 @@ void printFile(Folder* f) {
     }
     for (int i = 0; i < 100; i++) {
         if (strlen(f->data[i].str)) {
-            printf("%s\n", f->data[i].str);
+            printf("%d. %s\n", ++j, f->data[i].str);
         }
     }
     Sleep(2000);
@@ -118,6 +144,7 @@ void searchFile(Folder* f, String name) {
     do {
         if (p == NULL) break;
         if (!strcmp(p->name.str, name.str)) {
+            fileSort(p);
             printFile(p);
             break;
         }
@@ -133,8 +160,8 @@ int menu(int controller) {
     printf("\t2.폴더 보기\n");
     printf("\t3.폴더 삭제\n");
     printf("\t4.파일 생성\n");
-    printf("\t5.파일 찾기\n");
-    printf("\t6.파일 보기\n");
+    printf("\t5.파일 보기\n");
+    printf("\t6.파일 삭제\n");
     printf("\t7.프로그램 종료\n");
     printf("입력 >> ");
     scanf("%d", &controller);
@@ -204,7 +231,7 @@ int main() {
             folder_name = folderName(folder_name);  
             searchFolder(Folder, folder_name);
             break;
-        case 6:
+        case 5:
             system("cls");
             printf("--------------------파일 보기---------------\n");
             printFolder(Folder);
@@ -212,6 +239,8 @@ int main() {
             folder_name = folderName(folder_name);
             searchFile(Folder, folder_name);
             break;
+        case 6:
+
         case 7:
             appController = 0;
             break;
