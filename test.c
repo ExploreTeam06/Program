@@ -15,12 +15,17 @@ typedef struct Folder
     struct Folder* next;
 }Folder;
 
+int isEmpty(Folder* f) {
+    if (f == NULL) return 1;
+    return 0;
+}
+
 void printFolder(Folder* f) {
     int i = 0;
-    if (f == NULL)
-    {
+    if (isEmpty(f)) {
         system("cls");
-        printf("폴더를 생성해 주세요");
+        printf("폴더가 존재하지 않습니다\n");
+        Sleep(2000);
         return;
     }
     Folder* p = f->next;
@@ -41,7 +46,7 @@ void resetFolder(Folder* f) {
 Folder* makeFolder(Folder* f, String name) {
     Folder* newFolder = (Folder*)malloc(sizeof(Folder));
     newFolder->name = name;
-    if (f == NULL) {
+    if (f == NULL || f->next == NULL) {
         f = newFolder;
         f->next = f;
     }
@@ -63,13 +68,14 @@ void addFile(Folder* f) {
             system("cls");  
             printf("완료되었습니다\n");
             Sleep(2000);
+           // fileSort(f);
             return;
         }
     }
 }
 
 void searchFolder(Folder* f, String name) {
-    if (f == NULL) {
+    if (isEmpty(f)) {
         system("cls");
         printf("폴더가 존재하지 않습니다\n");
         Sleep(2000);
@@ -87,6 +93,12 @@ void searchFolder(Folder* f, String name) {
 }
 
 void printFile(Folder* f) {
+    if (isEmpty(f)) {
+        system("cls");
+        printf("폴더가 존재하지 않습니다\n");
+        Sleep(2000);
+        return;
+    }
     for (int i = 0; i < 100; i++) {
         if (strlen(f->data[i].str)) {
             printf("%s\n", f->data[i].str);
@@ -96,7 +108,7 @@ void printFile(Folder* f) {
 }
 
 void searchFile(Folder* f, String name) {
-    if (f == NULL) {
+    if (isEmpty(f)) {
         system("cls");
         printf("폴더가 존재하지 않습니다\n");
         Sleep(2000);
@@ -135,6 +147,23 @@ String folderName(String folder_name) {
     return folder_name;
 }
 
+void removeFolder(Folder* f, String name) {
+    Folder* p = f->next;
+    if (!strcmp(p->name.str, f->name.str)) {
+        f->next = NULL;
+        f = NULL;
+    }
+    else {
+        while (p != NULL) {
+            if (!strcmp(p->next->name.str, name.str)) {
+                p->next = p->next->next;
+                break;
+            }
+            p = p->next;
+        }
+    }
+}
+
 int main() {
     system("color a");
     Folder* Folder = NULL;
@@ -159,17 +188,27 @@ int main() {
             printFolder(Folder);
             Sleep(2000);
             break;
+        case 3:
+            system("cls");
+            printf("--------------------폴더 삭제---------------\n");
+            printFolder(Folder);
+            if (isEmpty(Folder)) break;
+            folder_name = folderName(folder_name);
+            removeFolder(Folder, folder_name);
+            break;
         case 4:
             system("cls");
             printf("--------------------파일 생성---------------\n");
             printFolder(Folder);
-            folder_name = folderName(folder_name);
+            if (isEmpty(Folder)) break;
+            folder_name = folderName(folder_name);  
             searchFolder(Folder, folder_name);
             break;
         case 6:
             system("cls");
             printf("--------------------파일 보기---------------\n");
             printFolder(Folder);
+            if (isEmpty(Folder)) break;
             folder_name = folderName(folder_name);
             searchFile(Folder, folder_name);
             break;
@@ -178,6 +217,7 @@ int main() {
             break;
         default:
             system("cls");
+            printf("--------------------파일 정리 프로그램---------------\n");
             printf("잘못된 선택입니다\n");
             Sleep(2000);
             break;
