@@ -20,6 +20,21 @@ int isEmpty(Folder* f) {
     return 0;
 }
 
+void folderSort(Folder* f) {
+    int check = 0;
+    Folder* p = f->next;
+    String checkdata;
+    while (p != f) {
+        check = strcmp(p->name.str, p->next->name.str);
+        if (check) {
+            strcpy(checkdata.str, p->next->name.str);
+            strcpy(p->next->name.str, p->name.str);
+            strcpy(p->name.str, checkdata.str);
+        }
+        p = p->next;
+    }
+}
+
 void printFolder(Folder* f) {
     int i = 0;
     if (isEmpty(f)) {
@@ -31,6 +46,7 @@ void printFolder(Folder* f) {
     Folder* p = f->next;
     system("cls");
     printf("--------------------존재 하는 폴더---------------\n");
+    folderSort(f);
     do {
         if (p == NULL) break;
         printf("%d. %s\n", ++i, p->name.str);
@@ -52,7 +68,7 @@ Folder* makeFolder(Folder* f, String name) {
     }
     else {
         Folder* p = f->next;
-        while (p != NULL) {
+        while (p != f) {
             if (!strcmp(p->name.str, name.str)) {
                 return f;
             }
@@ -70,13 +86,10 @@ void fileSort(Folder* f) {
     String checkdata;
     for (int i = 0; i < 99; i++) {
         check = strcmp(f->data[i].str, f->data[i + 1].str);
-        if (check)  {
+        if (check) {
             strcpy(checkdata.str, f->data[i + 1].str);
             strcpy(f->data[i + 1].str, f->data[i].str);
             strcpy(f->data[i].str, checkdata.str);
-        }
-        else if (check == 0) {
-            deleteFile();
         }
     }
 }
@@ -91,7 +104,7 @@ void addFile(Folder* f) {
         }
         if (!strlen(f->data[i].str)) {
             f->data[i] = file_name;
-            system("cls");  
+            system("cls");
             printf("완료되었습니다\n");
             Sleep(2000);
             return;
@@ -111,6 +124,36 @@ void searchFolder(Folder* f, String name) {
         if (p == NULL) break;
         if (!strcmp(p->name.str, name.str)) {
             addFile(p);
+            break;
+        }
+        p = p->next;
+    } while (p != NULL);
+}
+
+
+void searchFile2(Folder* f) {
+    String file_name;
+    scanf("%s", file_name.str);
+    String empty = { "" };
+    for (int i = 0; i < 100; i++) {
+        if (!strcmp(f->data[i].str, file_name.str)) {
+            f->data[i] = empty;
+        }
+    }
+}
+
+void searchFolder2(Folder* f, String name) {
+    if (isEmpty(f)) {
+        system("cls");
+        printf("폴더가 존재하지 않습니다\n");
+        Sleep(2000);
+        return;
+    }
+    Folder* p = f->next;
+    do {
+        if (p == NULL) break;
+        if (!strcmp(p->name.str, name.str)) {
+            searchFile2(f);
             break;
         }
         p = p->next;
@@ -228,7 +271,7 @@ int main() {
             printf("--------------------파일 생성---------------\n");
             printFolder(Folder);
             if (isEmpty(Folder)) break;
-            folder_name = folderName(folder_name);  
+            folder_name = folderName(folder_name);
             searchFolder(Folder, folder_name);
             break;
         case 5:
@@ -240,7 +283,12 @@ int main() {
             searchFile(Folder, folder_name);
             break;
         case 6:
-
+            system("cls");
+            printf("--------------------파일 삭제---------------\n");
+            printFolder(Folder);
+            if (isEmpty(Folder)) break;
+            folder_name = folderName(folder_name);
+            searchFolder2(Folder, folder_name);
         case 7:
             appController = 0;
             break;
@@ -252,6 +300,6 @@ int main() {
             break;
         }
     }
-    
+
     return 0;
 }
